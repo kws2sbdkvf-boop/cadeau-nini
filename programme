@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Une surprise pour Nini 🎁</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at top, #fff8e8 0%, #f6dfbd 45%, #e9c99e 100%);
+      color: #352719;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .page {
+      width: 100%;
+      max-width: 560px;
+      text-align: center;
+    }
+
+    .card {
+      background: rgba(255, 252, 245, 0.97);
+      border: 2px solid #dfc79f;
+      border-radius: 28px;
+      padding: 28px 20px 30px;
+      box-shadow: 0 15px 45px rgba(70, 45, 20, 0.18);
+    }
+
+    .emoji {
+      font-size: 42px;
+      margin-bottom: 5px;
+    }
+
+    .eyebrow {
+      font-size: 12px;
+      font-weight: bold;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #9a7040;
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(30px, 8vw, 46px);
+      line-height: 1.05;
+      color: #38281b;
+    }
+
+    .intro {
+      margin: 12px 0 22px;
+      color: #76624d;
+      font-size: 16px;
+    }
+
+    .scratch-container {
+      position: relative;
+      width: 100%;
+      max-width: 470px;
+      aspect-ratio: 1.35;
+      margin: 0 auto;
+      border-radius: 22px;
+      overflow: hidden;
+      border: 2px solid #d8c09b;
+      background: #fffaf0;
+      touch-action: none;
+      user-select: none;
+    }
+
+    /*
+      Le cadeau est présent sous la couche à gratter.
+    */
+    .prize {
+      position: absolute;
+      inset: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background:
+        linear-gradient(135deg, #fffdf8, #f7ead5);
+    }
+
+    .prize-top {
+      font-size: 20px;
+      font-weight: bold;
+      color: #a36c2f;
+      margin-bottom: 8px;
+    }
+
+    .prize-title {
+      font-size: clamp(25px, 7vw, 38px);
+      line-height: 1.05;
+      font-weight: 900;
+      color: #382719;
+      margin-bottom: 12px;
+    }
+
+    .prize-text {
+      font-size: 18px;
+      font-weight: bold;
+      color: #725333;
+      line-height: 1.4;
+    }
+
+    .restaurant {
+      margin-top: 8px;
+      font-size: 16px;
+      color: #936839;
+      font-weight: bold;
+    }
+
+    canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      cursor: crosshair;
+      z-index: 2;
+    }
+
+    .instruction {
+      margin: 16px 0 10px;
+      color: #7d6a54;
+      font-size: 14px;
+    }
+
+    .progress-container {
+      width: 220px;
+      height: 7px;
+      background: #eadcc5;
+      border-radius: 20px;
+      margin: 0 auto;
+      overflow: hidden;
+    }
+
+    .progress {
+      width: 0%;
+      height: 100%;
+      background: #b4844c;
+      border-radius: 20px;
+      transition: width 0.2s ease;
+    }
+
+    .success {
+      opacity: 0;
+      transform: translateY(5px);
+      transition: all 0.5s ease;
+      margin-top: 15px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #79532d;
+    }
+
+    .success.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .footer {
+      margin-top: 20px;
+      font-size: 13px;
+      color: #8d775d;
+    }
+
+    @media (max-width: 400px) {
+      .card {
+        padding: 22px 14px 24px;
+      }
+
+      .scratch-container {
+        aspect-ratio: 1.18;
+      }
+
+      .prize-text {
+        font-size: 16px;
+      }
+
+      .restaurant {
+        font-size: 14px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        scroll-behavior: auto !important;
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="page">
+
+    <section class="card">
+
+      <div class="emoji">🎁</div>
+
+      <div class="eyebrow">
+        Une surprise rien que pour toi
+      </div>
+
+      <h1>
+        Bravo Nini ! 🥳
+      </h1>
+
+      <p class="intro">
+        Un cadeau se cache sous cette carte…<br>
+        Gratte avec ton doigt pour le découvrir !
+      </p>
+
+      <div class="scratch-container" id="scratchArea">
+
+        <!-- CE QUI APPARAÎT SOUS LA ZONE À GRATTER -->
+        <div class="prize">
+
+          <div class="prize-top">
+            🎉 BRAVO NINI ! 🎉
+          </div>
+
+          <div class="prize-title">
+            Tu as gagné<br>
+            un week-end à Narbonne !
+          </div>
+
+          <div class="prize-text">
+            ☀️ Prépare ta valise…<br>
+            une belle escapade t'attend !
+          </div>
+
+          <div class="restaurant">
+            🍽️ Et une sortie au Grand Buffet de Narbonne !
+          </div>
+
+        </div>
+
+        <!-- SURFACE À GRATTER -->
+        <canvas
+          id="scratchCanvas"
+          aria-label="Zone à gratter pour découvrir le cadeau">
+        </canvas>
+
+      </div>
+
+      <div class="instruction">
+        ✨ Gratte la surface dorée avec ton doigt ou ta souris ✨
+      </div>
+
+      <div class="progress-container">
+        <div class="progress" id="progress"></div>
+      </div>
+
+      <div class="success" id="successMessage">
+        🎊 Cadeau découvert ! Joyeux anniversaire Nini ! ❤️
+      </div>
+
+      <div class="footer">
+        🌴 Narbonne • ☀️ Week-end • 🍽️ Le Grand Buffet
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <script>
+
+    const canvas = document.getElementById("scratchCanvas");
+    const container = document.getElementById("scratchArea");
+    const progressBar = document.getElementById("progress");
+    const successMessage = document.getElementById("successMessage");
+
+    const ctx = canvas.getContext("2d", {
+      willReadFrequently: true
+    });
+
+    let isScratching = false;
+    let isRevealed = false;
+    let lastCheck = 0;
+
+
+    /*
+      Création de la surface dorée.
+    */
+    function createScratchSurface() {
+
+      const rect = container.getBoundingClientRect();
+
+      const pixelRatio = Math.min(
+        window.devicePixelRatio || 1,
+        2
+      );
+
+      canvas.width = Math.round(rect.width * pixelRatio);
+      canvas.height = Math.round(rect.height * pixelRatio);
+
+      canvas.style.width = rect.width + "px";
+      canvas.style.height = rect.height + "px";
+
+      ctx.setTransform(
+        pixelRatio,
+        0,
+        0,
+        pixelRatio,
+        0,
+        0
+      );
+
+      /*
+        Fond métallique doré.
+      */
+      const gradient = ctx.createLinearGradient(
+        0,
+        0,
+        rect.width,
+        rect.height
+      );
+
+      gradient.addColorStop(0, "#b99968");
+      gradient.addColorStop(0.45, "#dfc79e");
+      gradient.addColorStop(1, "#ad8b5b");
+
+      ctx.globalCompositeOperation = "source-over";
+
+      ctx.fillStyle = gradient;
+
+      ctx.fillRect(
+        0,
+        0,
+        rect.width,
+        rect.height
+      );
+
+
+      /*
+        Petit effet brillant.
+      */
+      ctx.fillStyle = "rgba(255,255,255,0.25)";
+
+      ctx.font = "bold 19px Arial";
+
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+
+      ctx.fillText(
+        "GRATTE-MOI ✨",
+        rect.width / 2,
+        rect.height / 2
+      );
+
+
+      /*
+        On passe en mode effacement.
+        Chaque coup de doigt va donc effacer
+        la couche dorée.
+      */
+      ctx.globalCompositeOperation =
+        "destination-out";
+    }
+
+
+    /*
+      Récupère la position du doigt/de la souris.
+    */
+    function getPosition(event) {
+
+      const rect =
+        canvas.getBoundingClientRect();
+
+      return {
+        x: event.clientX - rect.left,
+        y: event.clientY - rect.top
+      };
+    }
+
+
+    /*
+      Efface une petite zone.
+    */
+    function scratch(event) {
+
+      if (!isScratching || isRevealed) {
+        return;
+      }
+
+      const position =
+        getPosition(event);
+
+      ctx.beginPath();
+
+      ctx.arc(
+        position.x,
+        position.y,
+        25,
+        0,
+        Math.PI * 2
+      );
+
+      ctx.fill();
+
+
+      /*
+        On ne calcule pas le pourcentage
+        à chaque mouvement pour garder
+        le téléphone fluide.
+      */
+      const now = performance.now();
+
+      if (now - lastCheck > 300) {
+
+        lastCheck = now;
+
+        calculateProgress();
+      }
+    }
+
+
+    /*
+      Calcule approximativement la quantité
+      de surface déjà grattée.
+    */
+    function calculateProgress() {
+
+      const imageData =
+        ctx.getImageData(
+          0,
+          0,
+          canvas.width,
+          canvas.height
+        );
+
+      const pixels = imageData.data;
+
+      let transparent = 0;
+      let total = 0;
+
+
+      /*
+        On échantillonne les pixels.
+      */
+      for (
+        let i = 3;
+        i < pixels.length;
+        i += 16
+      ) {
+
+        total++;
+
+        if (pixels[i] < 80) {
+          transparent++;
+        }
+      }
+
+
+      const percentage =
+        Math.min(
+          100,
+          (transparent / total) * 100
+        );
+
+
+      progressBar.style.width =
+        percentage.toFixed(0) + "%";
+
+
+      /*
+        Lorsque suffisamment de surface
+        est grattée, on révèle automatiquement
+        tout le cadeau.
+      */
+      if (percentage >= 60) {
+
+        revealPrize();
+      }
+    }
+
+
+    /*
+      Révélation finale.
+    */
+    function revealPrize() {
+
+      if (isRevealed) {
+        return;
+      }
+
+      isRevealed = true;
+
+      ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+      );
+
+      progressBar.style.width = "100%";
+
+      successMessage.classList.add(
+        "visible"
+      );
+    }
+
+
+    /*
+      Début du grattage.
+    */
+    canvas.addEventListener(
+      "pointerdown",
+      function(event) {
+
+        isScratching = true;
+
+        if (canvas.setPointerCapture) {
+          canvas.setPointerCapture(
+            event.pointerId
+          );
+        }
+
+        scratch(event);
+      }
+    );
+
+
+    /*
+      Mouvement pendant le grattage.
+    */
+    canvas.addEventListener(
+      "pointermove",
+      function(event) {
+
+        scratch(event);
+      }
+    );
+
+
+    /*
+      Fin du grattage.
+    */
+    canvas.addEventListener(
+      "pointerup",
+      function() {
+
+        isScratching = false;
+
+        calculateProgress();
+      }
+    );
+
+
+    canvas.addEventListener(
+      "pointercancel",
+      function() {
+
+        isScratching = false;
+      }
+    );
+
+
+    /*
+      Si l'écran change de taille,
+      on recrée la surface.
+    */
+    window.addEventListener(
+      "resize",
+      function() {
+
+        if (!isRevealed) {
+          createScratchSurface();
+        }
+      }
+    );
+
+
+    /*
+      Initialisation.
+    */
+    createScratchSurface();
+
+  </script>
+
+</body>
+</html>
